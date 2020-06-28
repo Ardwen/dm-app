@@ -33,4 +33,4 @@ function RadioBox(props) {
     )
 }
 
-export default 
+export default RadioBox
