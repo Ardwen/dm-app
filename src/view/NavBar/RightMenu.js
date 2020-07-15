@@ -1,7 +1,8 @@
 import React from 'react';
-import { Menu, Icon, Badge } from 'antd';
+import { Menu, Badge } from 'antd';
+import { MessageOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import { USER_SERVER } from '../../../Config';
+import { USER_SERVER } from '../../Config';
 import { withRouter } from 'react-router-dom';
 import { useSelector } from "react-redux";
 
@@ -44,7 +45,7 @@ function RightMenu(props) {
         <Menu.Item key="cart" style={{ paddingBottom: 3 }}>
           <Badge count={user.userData && user.userData.cart.length}>
             <a href="/user/cart" style={{ marginRight: -22 , color:'#667777'}}>
-              <Icon type="shopping-cart" style={{ fontSize: 30, marginBottom: 3 }} />
+              <MessageOutlined style={{ fontSize: 30, marginBottom: 3 }} />
             </a>
           </Badge>
         </Menu.Item>

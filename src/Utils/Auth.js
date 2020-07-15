@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { auth } from '../_actions/user_actions';
+import { auth } from '../User/userAction';
 import { useSelector, useDispatch } from "react-redux";
 
 export default function (ComposedClass, reload, adminRoute = null) {

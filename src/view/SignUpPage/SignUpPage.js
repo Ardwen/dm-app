@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import { registerUser } from "../../User/userAction";
+import { registerUser } from "../../../_actions/user_actions";
 import { useDispatch } from "react-redux";
 
 import {
@@ -41,9 +41,13 @@ function RegisterPage(props) {
     <Formik
       initialValues={{
         email: '',
+        lastName: '',
         name: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        role: '',
+        signInProvider: '',
+        providerUserId: ''
       }}
       validationSchema={Yup.object().shape({
         name: Yup.string()
@@ -62,16 +66,11 @@ function RegisterPage(props) {
         setTimeout(() => {
 
           let dataToSubmit = {
-            userId: 0,
             email: values.email,
-            userName: values.name,
             password: values.password,
-            role: "",
-            signInProvider: "",
-            providerUserId:""
+            name: values.name,
+            image: `http://gravatar.com/avatar/${moment().unix()}?d=identicon`
           };
-
-          console.log(dataToSubmit)
 
           dispatch(registerUser(dataToSubmit)).then(response => {
             if (response.payload.success) {
@@ -118,6 +117,7 @@ function RegisterPage(props) {
                   <div className="input-feedback">{errors.name}</div>
                 )}
               </Form.Item>
+
 
               <Form.Item required label="Email" hasFeedback validateStatus={errors.email && touched.email ? "error" : 'success'}>
                 <Input

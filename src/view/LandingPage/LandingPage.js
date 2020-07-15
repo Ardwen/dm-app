@@ -11,16 +11,24 @@ const { Meta } = Card;
 
 function LandingPage() {
 
-    const [Products, setProducts] = useState([])
+    const [Museumes, setMuseumes] = useState([])
     const [Skip, setSkip] = useState(0)
-    const [Limit, setLimit] = useState(8)
+    const [Limit, setLimit] = useState(6)
     const [PostSize, setPostSize] = useState()
     const [SearchTerms, setSearchTerms] = useState("")
-
-    const [Filters, setFilters] = useState({
-        continents: [],
-        price: []
+    const [Category, setCategory] = useState([])
+    const [Country, setCountry] = useState("")
+    const [categories, setCategories] = useState(() => {
+      Axios.post('/categories')
+      .then(response => {
+          if (response.data.success) {
+              setCategories(response.data)
+          } else {
+              alert('Failed to fectch categories')
+          }
+      })
     })
+
 
     useEffect(() => {
 
@@ -29,100 +37,66 @@ function LandingPage() {
             limit: Limit,
         }
 
-        getProducts(variables)
+        getMuseums(variables)
 
     }, [])
 
-    const getProducts = (variables) => {
-        Axios.post('/api/product/getProducts', variables)
+    const getMuseums = (variables) => {
+        Axios.post('/getMuseum', variables)
             .then(response => {
                 if (response.data.success) {
-                    if (variables.loadMore) {
-                        setProducts([...Products, ...response.data.products])
-                    } else {
-                        setProducts(response.data.products)
-                    }
-                    setPostSize(response.data.postSize)
+                    setMuseumes(response.data.content)
                 } else {
-                    alert('Failed to fectch product datas')
+                    alert('Failed to fectch Museume datas')
                 }
             })
     }
 
-    const onLoadMore = () => {
-        let skip = Skip + Limit;
+    //const onLoadMore = () => {
+    //    let skip = Skip + Limit;
 
-        const variables = {
-            skip: skip,
-            limit: Limit,
-            loadMore: true,
-            filters: Filters,
-            searchTerm: SearchTerms
-        }
-        getProducts(variables)
-        setSkip(skip)
-    }
+    //    const variables = {
+    //        skip: Skip,
+    //        limit: Limit,
+    //        category: Category,
+    //        country: Country,
+    //        searchTerm: SearchTerms
+    //  }
+    //    getProducts(variables)
+    //    setSkip(skip)
+    //}
 
 
-    const renderCards = Products.map((product, index) => {
+    const renderCards = Museumes.map((museume, index) => {
 
         return <Col lg={6} md={8} xs={24}>
             <Card
                 hoverable={true}
-                cover={<a href={`/product/${product._id}`} > <ImageSlider images={product.images} /></a>}
+                cover={<a href={`/Museume/${museume.id}`} > <ImageSlider images={product.firstmuImage} /></a>}
             >
                 <Meta
-                    title={product.title}
-                    description={`$${product.price}`}
+                    title={museume.name}
+                    description={'${museume.country}' + ' ' + '${museume.city}'}
                 />
             </Card>
         </Col>
     })
 
 
-    const showFilteredResults = (filters) => {
+    const handleFilters = (filters) => {
 
-        const variables = {
-            skip: 0,
-            limit: Limit,
-            filters: filters
+        const newFilters = [...Category]
 
-        }
-        getProducts(variables)
+        newFilters = filters
+
         setSkip(0)
-
+        setCategories(newFilters)
+        getProducts(variables)
     }
 
-    const handlePrice = (value) => {
-        const data = price;
-        let array = [];
-
-        for (let key in data) {
-
-            if (data[key]._id === parseInt(value, 10)) {
-                array = data[key].array;
-            }
-        }
-        console.log('array', array)
-        return array
-    }
-
-    const handleFilters = (filters, category) => {
-
-        const newFilters = { ...Filters }
-
-        newFilters[category] = filters
-
-        if (category === "price") {
-            let priceValues = handlePrice(filters)
-            newFilters[category] = priceValues
-
-        }
-
-        console.log(newFilters)
-
-        showFilteredResults(newFilters)
-        setFilters(newFilters)
+    const _onSelect = (country) => {
+      setCountry(country)
+      getMuseums(variables)
     }
 
     const updateSearchTerms = (newSearchTerm) => {
@@ -136,7 +110,6 @@ function LandingPage() {
 
         setSkip(0)
         setSearchTerms(newSearchTerm)
-
         getProducts(variables)
     }
 
@@ -153,15 +126,15 @@ function LandingPage() {
             <Row gutter={[16, 16]}>
                 <Col lg={12} xs={24} >
                     <CheckBox
-                        list={continents}
-                        handleFilters={filters => handleFilters(filters, "continents")}
+                        list={categories}
+                        handleFilters={category => handleFilters(category)}
                     />
                 </Col>
                 <Col lg={12} xs={24}>
-                    <RadioBox
-                        list={price}
-                        handleFilters={filters => handleFilters(filters, "price")}
-                    />
+                    <Dropdown options={countries}
+                      onChange={this._onSelect}
+                      value={defaultOption}
+                      placeholder="Select an option" />;
                 </Col>
             </Row>
 

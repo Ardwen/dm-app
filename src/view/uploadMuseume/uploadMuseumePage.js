@@ -1,18 +1,18 @@
-import React, { useState } from 'react'
-import { Typography, Button, Form, message, Input, Icon } from 'antd';
-import axios from 'axios';
-import Checkbox from './CheckBox.js'
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, {useEffect, useState } from 'react'
+import { Typography, Button, Form, Input} from 'antd';
 
-import React from 'react'
+import Axios from 'axios';
 
-function uploadMuseumePage() {
-  const items = [
-      'One',
-      'Two',
-      'Three',
-      ];
+import CountryOptions from './Countries'
+import FileUpload from './FileUpload'
+
+const { Title } = Typography;
+const { TextArea } = Input;
+
+const countryOptions = CountryOptions;
+
+function UploadMuseumePage() {
+
     const [TitleValue, setTitleValue] = useState("")
     const [DescriptionValue, setDescriptionValue] = useState("")
     const [CountryValue, setCountryValue] = useState("")
@@ -22,6 +22,9 @@ function uploadMuseumePage() {
 
     const [Images, setImages] = useState([])
 
+    const [categories,setcategories] = useState([])
+
+
     const onTitleChange = (event) => {
         setTitleValue(event.currentTarget.value)
     }
@@ -30,67 +33,62 @@ function uploadMuseumePage() {
         setDescriptionValue(event.currentTarget.value)
     }
 
-    const onCountryChange = (event) => {
-        setCountryChange(event.currentTarget.value)
+    const onCountryChange= (event) => {
+      setCountryValue(event.currentTarget.value)
     }
 
     const onCityChange = (event) => {
-        setCityChange(event.currentTarget.value)
+        setCityValue(event.currentTarget.value)
     }
 
     const onCategoryChange = (event) => {
-        setCategoryChange(event.currentTarget.value)
+        setCategoryValue(event.currentTarget.value)
     }
 
-    const updateImages = (newImages) => {
-        setImages(newImages)
+    const updateImages = (newImagesId) => {
+        setImages([...Images,newImagesId])
     }
 
-    toggleCheckbox = (label) => {
-    if (this.selectedCheckboxes.has(label)) {
-      this.selectedCheckboxes.delete(label);
-    } else {
-      this.selectedCheckboxes.add(label);
+    const onLinkChange = (event) => {
+        setLinkValue(event.currentTarget.value)
     }
-  }
 
-  createCheckbox = (label) => (
-        <Checkbox
-            label={label}
-            handleCheckboxChange={this.toggleCheckbox}
-            key={label}
-          />
-      )
+    useEffect(() => {
+      Axios.get('http://localhost:8086/categories')
+        .then(res => {
+          setcategories(res.data)
+          console.log(res.data)
+        })
+    },[])
 
-  createCheckboxes = () => (
-    items.map(this.createCheckbox)
-  )
+
 
     const onSubmit = (event) => {
         event.preventDefault();
 
 
-        if (!TitleValue || !DescriptionValue || !PriceValue ||
-            !ContinentValue || !Images) {
+        if (!TitleValue || !DescriptionValue || !CountryValue ||
+            !CityValue || !CategoryValue || !LinkValue) {
             return alert('fill all the fields first!')
         }
 
         const variables = {
-            host: props.user.userData._id,
+            //host: props.user.userData._id,
             title: TitleValue,
             description: DescriptionValue,
-            country: PriceValue,
+            country: CountryValue,
             city: CityValue,
             category: CategoryValue,
             link:LinkValue,
-            images: Images,
+            images: Images
         }
 
-        Axios.post('/api/product/uploadProduct', variables)
+        Axios.post('http://localhost:8086/AddMuseume/'+window.localStorage.getItem('username'), variables)
             .then(response => {
-                if (response.data.success) {
+              console.log(response)
+                if (response.status == 200) {
                     alert('Museume Successfully Set up')
-                    props.history.push('/')
+                    //props.history.push('/')
                 } else {
                     alert('Sorry, Uploading Error')
                 }
@@ -119,6 +117,7 @@ function uploadMuseumePage() {
                   />
                   <br />
                   <br />
+
                   <label>Description</label>
                   <TextArea
                       onChange={onDescriptionChange}
@@ -128,12 +127,14 @@ function uploadMuseumePage() {
                   <br />
 
                   <label>Country</label>
-                  <Input
-                      onChange={onCountryChange}
-                      value={CountryValue}
-                  />
+                  <select onChange={onCountryChange} value={CountryValue}>
+                        {countryOptions.map(item => (
+                            <option key={item.key} value={item.key}> {item.text}</option>
+                        ))}
+                  </select>
                   <br />
                   <br />
+
 
                   <label>City</label>
                   <Input
@@ -143,23 +144,23 @@ function uploadMuseumePage() {
                   <br />
                   <br />
 
-                  <label>Price($)</label>
-                  <Input
-                      onChange={onPriceChange}
-                      value={PriceValue}
-                      type="number"
-                  />
+                  <label>Link</label>
+                    <Input
+                        onChange={onLinkChange}
+                        value={LinkValue}
+                    />
                   <br />
                   <br />
 
-                  //<select onChange={onContinentsSelectChange} value={ContinentValue}>
-                  //    {Continents.map(item => (
-                  //        <option key={item.key} value={item.key}>{item.value} </option>
-                  //    ))}
-                  //</select>
-                  {this.createCheckboxes()}
+                  <label>Category</label>
+                  <select onChange={onCategoryChange} value={CategoryValue}>
+                      {categories.map(item => (
+                          <option key={item.id} value={item.id}> {item.name}</option>
+                      ))}
+                  </select>
                   <br />
                   <br />
+
 
                   <Button
                       onClick={onSubmit}
@@ -173,4 +174,4 @@ function uploadMuseumePage() {
       )
 }
 
-export default uploadMuseumePage
+export default UploadMuseumePage;

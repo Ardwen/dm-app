@@ -1,22 +1,26 @@
 import React , { Suspense }from 'react';
-import { Route, Switch } from "react-router-dom";
-
+import { Route,Switch,BrowserRouter } from "react-router-dom";
+import LoginPage from "./view/LoginPage/LoginPage.js";
+import RegisterPage from "./view/RegisterPage/RegisterPage.js";
+import NavBar from "./view/NavBar/NavBar";
+import RegisterPage from "./view/ArtItemPage/RegisterPage.js";
 //pages for product
-import uploadArtItemPage from "./view/uploadMuseume/uploadMuseumePage.js"
-
+import UploadMuseumePage from "./view/uploadMuseume/uploadMuseumePage"
+import Auth from "./Utils/Auth.js";
 function App() {
   return (
     <Suspense fallback={(<div>Loading...</div>)}>
-      <NavBar />
+    <NavBar />
       <div style={{ paddingTop: '75px', minHeight: 'calc(100vh - 80px)' }}>
-        <Switch>
-          <Route exact path="/" component={Auth(LandingPage, null)} />
-          <Route exact path="/login" component={Auth(LoginPage, false)} />
+          <BrowserRouter>
+          <Switch>
+          <Route exact path="/museume/:museumeId" component={DetailProductPage} />
+          <Route exact path="/login" component={LoginPage} />
           <Route exact path="/register" component={Auth(RegisterPage, false)} />
-          <Route exact path="/Museume/upload" component={Auth(uploadArtItemPage, true)} />
-        </Switch>
+          <Route exact path="/" component={UploadMuseumePage} />
+          </Switch>
+          </BrowserRouter>
       </div>
-      <Footer />
     </Suspense>
   );
 }

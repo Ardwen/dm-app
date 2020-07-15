@@ -1,1 +1,1 @@
-export const USER_SERVER = '/api/users';
+export const USER_SERVER = 'http://localhost:8086';
