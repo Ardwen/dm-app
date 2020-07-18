@@ -1,23 +1,22 @@
 import React, {useEffect, useState } from 'react'
 import { Typography, Button, Form, Input} from 'antd';
-
 import Axios from 'axios';
-
 import CountryOptions from './Countries'
 import FileUpload from './FileUpload'
+import { USER_SERVER } from '../../Config.js';
 
 const { Title } = Typography;
 const { TextArea } = Input;
-
 const countryOptions = CountryOptions;
 
-function UploadMuseumePage() {
+
+function UploadMuseumePage(props) {
 
     const [TitleValue, setTitleValue] = useState("")
     const [DescriptionValue, setDescriptionValue] = useState("")
     const [CountryValue, setCountryValue] = useState("")
     const [CityValue, setCityValue] = useState("")
-    const [CategoryValue, setCategoryValue] = useState(new Set())
+    const [CategoryValue, setCategoryValue] = useState(0)
     const [LinkValue, setLinkValue] = useState("")
 
     const [Images, setImages] = useState([])
@@ -86,8 +85,9 @@ function UploadMuseumePage() {
         Axios.post('http://localhost:8086/AddMuseume/'+window.localStorage.getItem('username'), variables)
             .then(response => {
               console.log(response)
-                if (response.status == 200) {
+              if (response.status == 200) {
                     alert('Museume Successfully Set up')
+                    props.history.push("/artItem/:museumeId")
                     //props.history.push('/')
                 } else {
                     alert('Sorry, Uploading Error')

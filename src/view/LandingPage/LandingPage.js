@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Axios from 'axios';
-import { Icon, Col, Card, Row } from 'antd';
+import {Col, Card, Row } from 'antd';
 import ImageSlider from '../components/ImageSlider';
 import CheckBox from './components/CheckBox';
 import RadioBox from './components/RadioBox';
@@ -12,33 +12,30 @@ const { Meta } = Card;
 function LandingPage() {
 
     const [Museumes, setMuseumes] = useState([])
-    const [Skip, setSkip] = useState(0)
+    const [Page, setPage] = useState(1)
     const [Limit, setLimit] = useState(6)
     const [PostSize, setPostSize] = useState()
     const [SearchTerms, setSearchTerms] = useState("")
     const [Category, setCategory] = useState([])
     const [Country, setCountry] = useState("")
-    const [categories, setCategories] = useState(() => {
-      Axios.post('/categories')
-      .then(response => {
-          if (response.data.success) {
-              setCategories(response.data)
-          } else {
-              alert('Failed to fectch categories')
-          }
-      })
-    })
+    const [categories, setCategories] = useState([])
+
 
 
     useEffect(() => {
-
         const variables = {
-            skip: Skip,
+            page: Page,
             limit: Limit,
+            cid: Category,
+            country: Country,
+            searchTerm: SearchTerms
         }
-
+        Axios.get('http://localhost:8086/categories')
+          .then(res => {
+            setCategories(res.data)
+            console.log(res.data)
+          })
         getMuseums(variables)
-
     }, [])
 
     const getMuseums = (variables) => {
@@ -72,7 +69,7 @@ function LandingPage() {
         return <Col lg={6} md={8} xs={24}>
             <Card
                 hoverable={true}
-                cover={<a href={`/Museume/${museume.id}`} > <ImageSlider images={product.firstmuImage} /></a>}
+                cover={<a href={`/Museume/${museume.id}`} > <ImageSlider images={museume.firstmuImage} /></a>}
             >
                 <Meta
                     title={museume.name}
@@ -85,30 +82,41 @@ function LandingPage() {
 
     const handleFilters = (filters) => {
 
-        const newFilters = [...Category]
-
-        newFilters = filters
-
-        setSkip(0)
-        setCategories(newFilters)
-        getProducts(variables)
+      const variables = {
+          page: 1,
+          limit: Limit,
+          cid: filters,
+          country: Country,
+          searchTerm: SearchTerms
+      }
+        setCategory(filters)
+        setPage(1)
+        getMuseums(variables)
     }
 
-    const _onSelect = (country) => {
+    const updateCountry = (country) => {
+      const variables = {
+          page: 1,
+          limit: Limit,
+          cid: Category,
+          country: country,
+          searchTerm: SearchTerms
+      }
       setCountry(country)
+      setPage(1)
       getMuseums(variables)
     }
 
     const updateSearchTerms = (newSearchTerm) => {
 
         const variables = {
-            skip: 0,
+            page: 1,
             limit: Limit,
-            filters: Filters,
+            cid: Category,
+            country: country,
             searchTerm: newSearchTerm
         }
-
-        setSkip(0)
+        setPage(1)
         setSearchTerms(newSearchTerm)
         getProducts(variables)
     }
@@ -127,12 +135,12 @@ function LandingPage() {
                 <Col lg={12} xs={24} >
                     <CheckBox
                         list={categories}
-                        handleFilters={category => handleFilters(category)}
+                        handleFilters={handleFilters}
                     />
                 </Col>
                 <Col lg={12} xs={24}>
                     <Dropdown options={countries}
-                      onChange={this._onSelect}
+                      onChange={updateCountry}
                       value={defaultOption}
                       placeholder="Select an option" />;
                 </Col>

@@ -5,8 +5,9 @@ import {
     AUTH_USER,
     LOGOUT_USER,
     ADD_TO_CART_USER,
+    POST_ART_ITEMS_USER,
     GET_ART_ITEMS_USER,
-    REMOVE_CART_ITEM_USER
+    REMOVE_ART_ITEM_USER
 } from './types.js';
 import { USER_SERVER } from '../Config.js';
 
@@ -61,10 +62,19 @@ export function addToCart(_id) {
     }
 }
 
-
+export function addArtItems(artItem) {
+    const request = axios.post(`${USER_SERVER}/ArtItems/add`,artItem)
+        .then(response => {
+            return response.data;
+        });
+    return {
+        type: POST_ART_ITEMS_USER,
+        payload: request
+    }
+}
 
 export function getArtItems(museumeId) {
-    const request = axios.get(`${USER_SERVER}/${museumeId}/arts`)
+    const request = axios.get(`${USER_SERVER}/Museum/${museumeId}/arts`)
         .then(response => {
             return response.data;
         });
@@ -83,7 +93,7 @@ export function removeArtItem(id) {
             return response.data;
         });
     return {
-        type: REMOVE_CART_ITEM_USER,
+        type: REMOVE_ART_ITEM_USER,
         payload: request
     }
 }

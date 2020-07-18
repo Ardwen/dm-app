@@ -18,14 +18,8 @@ function FileUpload(props) {
         //save the Image we chose inside the Node Server
         Axios.post('http://localhost:8086/AddmuImages', formData)
             .then(response => {
-                if (response.data.success) {
-
                     setImages([...Images, formData])
-                    props.refreshFunction([...Images, response.data.id])
-
-                } else {
-                    alert('Failed to save the Image in Server')
-                }
+                    props.refreshFunction(response.data.id)
             })
     }
 
