@@ -43,7 +43,7 @@ function PopUp(props){
         //host: props.user.userData._id,
         name: Name,
         description: Description,
-        museumeId: museumeId,
+        museumeId: props.museumeId,
         images: Images
     }
     console.log(variables)

@@ -19,7 +19,7 @@ function App() {
           <Route exact path="/login" component={LoginPage} />
           <Route exact path="/register" component={Auth(RegisterPage, false)} />
           <Route exact path="/upLoadMuseume" component={UploadMuseumePage}/>
-          <Route exact path="/LandingPage" component={UploadMuseumePage}/>
+          <Route exact path="/" component={LandingPage}/>
           </Switch>
           </BrowserRouter>
       </div>

@@ -1,36 +1,38 @@
 import React, { useEffect, useState } from 'react'
 import Axios from 'axios';
-import {Col, Card, Row } from 'antd';
-import ImageSlider from '../components/ImageSlider';
+import {Col, Card, Row, Pagination,Collapse } from 'antd';
+import { RocketOutlined } from '@ant-design/icons';
+import ImageSlider from './components/ImageSlider';
 import CheckBox from './components/CheckBox';
 import RadioBox from './components/RadioBox';
-import {continents,price} from './components/Datas';
 import SearchFeature from './components/SearchFeature';
-
+import { Dropdown } from 'semantic-ui-react'
+import CountryOptions from "../../Utils/Countries";
+import { USER_SERVER } from '../../Config.js';
 const { Meta } = Card;
+const countryOptions = CountryOptions;
 
+const { Panel } = Collapse
 function LandingPage() {
 
     const [Museumes, setMuseumes] = useState([])
     const [Page, setPage] = useState(1)
     const [Limit, setLimit] = useState(6)
-    const [PostSize, setPostSize] = useState()
     const [SearchTerms, setSearchTerms] = useState("")
     const [Category, setCategory] = useState([])
     const [Country, setCountry] = useState("")
-    const [categories, setCategories] = useState([])
+    const [Categories, setCategories] = useState([])
+    const [CurrentMuseume, setCurrentMuseume] = useState([])
 
 
 
     useEffect(() => {
         const variables = {
-            page: Page,
-            limit: Limit,
             cid: Category,
             country: Country,
             searchTerm: SearchTerms
         }
-        Axios.get('http://localhost:8086/categories')
+        Axios.get(`${USER_SERVER}/categories`)
           .then(res => {
             setCategories(res.data)
             console.log(res.data)
@@ -39,41 +41,37 @@ function LandingPage() {
     }, [])
 
     const getMuseums = (variables) => {
-        Axios.post('/getMuseum', variables)
+        Axios.post(`${USER_SERVER}/getMuseum`,variables)
             .then(response => {
-                if (response.data.success) {
-                    setMuseumes(response.data.content)
+                if (response.status === 200) {
+                    setMuseumes(response.data)
+                    let elements = response.data.slice(0,Limit)
+                    setCurrentMuseume(elements)
+                    console.log(CurrentMuseume)
                 } else {
                     alert('Failed to fectch Museume datas')
                 }
             })
     }
 
-    //const onLoadMore = () => {
-    //    let skip = Skip + Limit;
-
-    //    const variables = {
-    //        skip: Skip,
-    //        limit: Limit,
-    //        category: Category,
-    //        country: Country,
-    //        searchTerm: SearchTerms
-    //  }
-    //    getProducts(variables)
-    //    setSkip(skip)
-    //}
+    function onChange(pageNumber) {
+      console.log('Page: ', pageNumber);
+    }
 
 
-    const renderCards = Museumes.map((museume, index) => {
+
+    const renderCards = CurrentMuseume.map((museume, index) => {
 
         return <Col lg={6} md={8} xs={24}>
             <Card
                 hoverable={true}
-                cover={<a href={`/Museume/${museume.id}`} > <ImageSlider images={museume.firstmuImage} /></a>}
+                cover={<a href={`/Museume/${museume.id}`} > <img
+                  alt="example"
+                  src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"/> /></a>}
             >
                 <Meta
                     title={museume.name}
-                    description={'${museume.country}' + ' ' + '${museume.city}'}
+                    description={museume.country + ' ' + museume.city}
                 />
             </Card>
         </Col>
@@ -83,8 +81,6 @@ function LandingPage() {
     const handleFilters = (filters) => {
 
       const variables = {
-          page: 1,
-          limit: Limit,
           cid: filters,
           country: Country,
           searchTerm: SearchTerms
@@ -94,10 +90,9 @@ function LandingPage() {
         getMuseums(variables)
     }
 
-    const updateCountry = (country) => {
+    const updateCountry = (event) => {
+      var country = event.currentTarget.value
       const variables = {
-          page: 1,
-          limit: Limit,
           cid: Category,
           country: country,
           searchTerm: SearchTerms
@@ -110,22 +105,28 @@ function LandingPage() {
     const updateSearchTerms = (newSearchTerm) => {
 
         const variables = {
-            page: 1,
-            limit: Limit,
             cid: Category,
-            country: country,
+            country: Country,
             searchTerm: newSearchTerm
         }
         setPage(1)
         setSearchTerms(newSearchTerm)
-        getProducts(variables)
+        getMuseums(variables)
+    }
+
+
+    const handlePageClick = (pageNo) => {
+      const selectedPage = pageNo - 1;
+      const offset = selectedPage * Limit;
+      let elements = Museumes.slice(offset,offset + Limit);
+      setCurrentMuseume(elements);
     }
 
 
     return (
         <div style={{ width: '75%', margin: '3rem auto' }}>
             <div style={{ textAlign: 'center' }}>
-                <h2>  Let's Travel Anywhere  <Icon type="rocket" />  </h2>
+                <h2>  Let's Travel Anywhere  <RocketOutlined />  </h2>
             </div>
 
 
@@ -134,15 +135,20 @@ function LandingPage() {
             <Row gutter={[16, 16]}>
                 <Col lg={12} xs={24} >
                     <CheckBox
-                        list={categories}
+                        list={Categories}
                         handleFilters={handleFilters}
                     />
                 </Col>
                 <Col lg={12} xs={24}>
-                    <Dropdown options={countries}
-                      onChange={updateCountry}
-                      value={defaultOption}
-                      placeholder="Select an option" />;
+                  <Collapse defaultActiveKey={['0']}>
+                      <Panel header="Country" key="1">
+                        <select onChange={updateCountry} value={Country}>
+                              {countryOptions.map(item => (
+                                  <option key={item.key} value={item.key}> {item.text}</option>
+                              ))}
+                        </select>
+                      </Panel>
+                  </Collapse>
                 </Col>
             </Row>
 
@@ -157,7 +163,7 @@ function LandingPage() {
             </div>
 
 
-            {Products.length === 0 ?
+            {CurrentMuseume.length === 0 ?
                 <div style={{ display: 'flex', height: '300px', justifyContent: 'center', alignItems: 'center' }}>
                     <h2>No post yet...</h2>
                 </div> :
@@ -167,18 +173,18 @@ function LandingPage() {
                         {renderCards}
 
                     </Row>
-
-
                 </div>
             }
             <br /><br />
 
-            {PostSize >= Limit &&
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                    <button onClick={onLoadMore}>Load More</button>
-                </div>
-            }
-
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Pagination
+                defaultCurrent={1}
+                onChange={handlePageClick}
+                total={Museumes.length}
+                pageSize={Limit}
+              />
+            </div>
 
         </div>
     )

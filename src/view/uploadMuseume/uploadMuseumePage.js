@@ -1,7 +1,7 @@
 import React, {useEffect, useState } from 'react'
 import { Typography, Button, Form, Input} from 'antd';
 import Axios from 'axios';
-import CountryOptions from './Countries'
+import CountryOptions from "../../Utils/Countries";
 import FileUpload from './FileUpload'
 import { USER_SERVER } from '../../Config.js';
 
@@ -53,7 +53,7 @@ function UploadMuseumePage(props) {
     }
 
     useEffect(() => {
-      Axios.get('http://localhost:8086/categories')
+      Axios.get(`${USER_SERVER}/categories`)
         .then(res => {
           setcategories(res.data)
           console.log(res.data)
@@ -85,7 +85,7 @@ function UploadMuseumePage(props) {
         Axios.post('http://localhost:8086/AddMuseume/'+window.localStorage.getItem('username'), variables)
             .then(response => {
               console.log(response)
-              if (response.status == 200) {
+              if (response.status === 200) {
                     alert('Museume Successfully Set up')
                     props.history.push("/artItem/:museumeId")
                     //props.history.push('/')
