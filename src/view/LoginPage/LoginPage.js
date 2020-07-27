@@ -37,15 +37,9 @@ function LoginPage(props) {
       })}
       onSubmit={(values, { setSubmitting }) => {
         setTimeout(() => {
-          var dataToSubmit = new FormData()
-          dataToSubmit.append('username',values.username)
-          dataToSubmit.append('password', values.password)
-          console.log(dataToSubmit)
-
-          dispatch(loginUser(dataToSubmit))
+          dispatch(loginUser(values.username,values.password))
             .then(response => {
-              console.log(response)
-                window.localStorage.setItem('username', values.username);
+                AuthenticationService.registerSuccessfulLoginForJwt(username, response.payload.token)
                 if (rememberMe === true) {
                   window.localStorage.setItem('rememberMe', values.id);
                 } else {

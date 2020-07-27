@@ -10,14 +10,15 @@ const { TextArea } = Input;
 const countryOptions = CountryOptions;
 
 
-function UploadMuseumePage(props) {
+function MuseumeEditPage(props) {
 
-    const [TitleValue, setTitleValue] = useState("")
-    const [DescriptionValue, setDescriptionValue] = useState("")
-    const [CountryValue, setCountryValue] = useState("")
-    const [CityValue, setCityValue] = useState("")
-    const [CategoryValue, setCategoryValue] = useState(0)
-    const [LinkValue, setLinkValue] = useState("")
+    const [Museume, setMuseume] = useState(props.Museume)
+    const [TitleValue, setTitleValue] = useState(props.Museume.name)
+    const [DescriptionValue, setDescriptionValue] = useState(props.Museume.introduction)
+    const [CountryValue, setCountryValue] = useState(props.Museume.country)
+    const [CityValue, setCityValue] = useState(props.Museume.city)
+    const [CategoryValue, setCategoryValue] = useState(parseInt(props.Museume.category.id))
+    const [LinkValue, setLinkValue] = useState(props.Museume.link)
 
     const [Images, setImages] = useState([])
 
@@ -58,13 +59,16 @@ function UploadMuseumePage(props) {
         .then(res => {
           setcategories(res.data)
         })
+
+        Axios.get(`${USER_SERVER}/categories`)
+          .then(res => {
+            setcategories(res.data)
+          })
     },[])
 
 
 
     const onSubmit = (event) => {
-        event.preventDefault();
-
 
         if (!TitleValue || !DescriptionValue || !CountryValue ||
             !CityValue || !CategoryValue || !LinkValue) {
@@ -83,12 +87,10 @@ function UploadMuseumePage(props) {
         }
         console.log(variables);
 
-        Axios.post('http://localhost:8086/AddMuseume/'+window.localStorage.getItem('username'), variables)
+        Axios.post(`${USER_SERVER}/EditMuseume/${Museume.id}`, variables)
             .then(response => {
               if (response.status === 200) {
-                    alert('Museume Successfully Set up')
-                    props.history.push("/artItem/"+response.data.id)
-                    //props.history.push('/')
+                    alert('Museume Successfully updated')
                 } else {
                     alert('Sorry, Uploading Error')
                 }
@@ -106,7 +108,7 @@ function UploadMuseumePage(props) {
               <Form onSubmit={onSubmit} >
 
                   {/* DropZone */}
-                  <FileUpload refreshFunction={updateImages} />
+                  <FileUpload refreshFunction={updateImages} id={}/>
 
                   <br />
                   <br />
@@ -174,4 +176,4 @@ function UploadMuseumePage(props) {
       )
 }
 
-export default UploadMuseumePage;
+export default MuseumeEditPage;

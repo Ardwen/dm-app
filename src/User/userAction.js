@@ -14,16 +14,15 @@ import { USER_SERVER } from '../Config.js';
 export function registerUser(dataToSubmit) {
     const request = axios.post(`${USER_SERVER}/register`, dataToSubmit)
         .then(response => response.data);
-
     return {
         type: REGISTER_USER,
         payload: request
     }
 }
 
-export function loginUser(dataToSubmit) {
+export function loginUser(username, password) {
     //const data = new FormData(dataToSubmit)
-    const request = axios.post(`${USER_SERVER}/login`, dataToSubmit)
+    const request = AuthenticationService.executeJwtAuthenticationService(username, password)
         .then(response => response.data);
     return {
         type: LOGIN_USER,
@@ -42,25 +41,9 @@ export function auth() {
 }
 
 export function logoutUser() {
-    const request = axios.get(`${USER_SERVER}/logout`)
-        .then(response => response.data);
-
-    return {
-        type: LOGOUT_USER,
-        payload: request
-    }
+    AuthenticationService.logout()
 }
 
-
-export function addToCart(_id) {
-    const request = axios.get(`${USER_SERVER}/addToCart?productId=${_id}`)
-        .then(response => response.data);
-
-    return {
-        type: ADD_TO_CART_USER,
-        payload: request
-    }
-}
 
 export function addArtItems(artItem) {
     const request = axios.post(`${USER_SERVER}/ArtItems/add`,artItem)
@@ -83,8 +66,6 @@ export function getArtItems(museumeId) {
         payload: request
     }
 }
-
-
 
 
 export function removeArtItem(id) {

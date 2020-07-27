@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import Axios from 'axios'
-import { Row, Col } from 'antd';
+import React, { useEffect, useState } from 'react';
+import Axios from 'axios';
+import { Row, Col, Card} from 'antd';
 import ProfileImage from './Components/ProfileImage.js';
-import MusemeInfo from './Components/MuseumeInfo.js';
-import { USER_SERVER } from '../Config.js';
+import MuInfo from './Components/MuseumeInfo.js';
+import { USER_SERVER,AWS_S3 } from '../../Config.js';
+const { Meta } = Card;
+
 
 function DetailMuseumePage(props) {
-    const dispatch = useDispatch();
-    const museumeId = props.match.params.museumeId
-    const [Museume, setMuseume] = useState([])
-    const [ArtItems, setArtItem] = useState([])
+    const museumeId = parseInt(props.match.params.museumeId);
+    const [Museume, setMuseume] = useState([]);
+    const [ArtItem, setArtItem] = useState([]);
 
     useEffect(() => {
         Axios.get(`${USER_SERVER}/Museume/${museumeId}`)
@@ -26,10 +27,11 @@ function DetailMuseumePage(props) {
         return <Col lg={6} md={8} xs={24}>
             <Card
                 hoverable={true}
-                cover={<a href={`/Museume/${museume.id}`} > <img images={product.firstmuImage} /></a>}
+                cover= {<img src = {`${AWS_S3}artSingle${artItem.firstArtImage.id}.jpg`} />
+            }>
                 <Meta
-                    title={artItme.name}
-                    description={artItme.description}
+                    title={artItem.name}
+                    description={artItem.description}
                 />
             </Card>
         </Col>
@@ -41,16 +43,14 @@ function DetailMuseumePage(props) {
             <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <h1>{Museume.name}</h1>
             </div>
-
             <br />
-
             <Row gutter={[16, 16]} >
                 <Col lg={12} xs={24}>
-                    <ProfileImage detail={Museume} />
+                    <ProfileImage detail={museumeId} />
                 </Col>
                 <Col lg={12} xs={24}>
-                    <ProductInfo
-                        detail={Product} />
+                    <MuInfo
+                        detail={Museume} />
                 </Col>
             </Row>
 
@@ -63,4 +63,4 @@ function DetailMuseumePage(props) {
     )
 }
 
-export default DetailProductPage
+export default DetailMuseumePage

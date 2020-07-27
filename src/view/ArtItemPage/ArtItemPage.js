@@ -19,10 +19,9 @@ function ArtItemPage(props) {
   useEffect(() => {
           dispatch(getArtItems(museumeId))
                 .then((response) => {
-                    console.log(response.payload)
                     setArtItem(response.payload)
                 })
-  },[ArtItem])
+  },[])
 
   const HandleEdit = (id) => {
     props.history.push("/");

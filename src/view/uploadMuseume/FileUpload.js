@@ -13,12 +13,17 @@ function FileUpload(props) {
         const config = {
             header: { 'content-type': 'multipart/form-data' }
         }
-        formData.append('imageFile', files[0])
+        formData.append('type','single')
+        formData.append('mid', 1);
+        formData.append('imageFile', files[0]);
+
+        console.log(formData)
 
         //save the Image we chose inside the Node Server
         Axios.post('http://localhost:8086/AddmuImages', formData)
             .then(response => {
                     setImages([...Images, formData])
+                    console.log(response.data);
                     props.refreshFunction(response.data.id)
             })
     }

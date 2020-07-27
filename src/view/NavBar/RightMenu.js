@@ -35,7 +35,7 @@ function RightMenu(props) {
       <Menu mode={props.mode}>
 
         <Menu.Item key="history">
-          <a href="/history">History</a>
+          <a href="/ListMuseume">History</a>
         </Menu.Item>
 
         <Menu.Item key="upload">
@@ -49,7 +49,6 @@ function RightMenu(props) {
             </a>
           </Badge>
         </Menu.Item>
-
 
         <Menu.Item key="logout">
           <a onClick={logoutHandler}>Logout</a>

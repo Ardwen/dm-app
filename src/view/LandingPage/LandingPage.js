@@ -8,7 +8,7 @@ import RadioBox from './components/RadioBox';
 import SearchFeature from './components/SearchFeature';
 import { Dropdown } from 'semantic-ui-react'
 import CountryOptions from "../../Utils/Countries";
-import { USER_SERVER } from '../../Config.js';
+import { USER_SERVER, AWS_S3 } from '../../Config.js';
 const { Meta } = Card;
 const countryOptions = CountryOptions;
 
@@ -65,9 +65,11 @@ function LandingPage() {
         return <Col lg={6} md={8} xs={24}>
             <Card
                 hoverable={true}
-                cover={<a href={`/Museume/${museume.id}`} > <img
-                  alt="example"
-                  src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"/> /></a>}
+                cover={
+                <a href={`/Museume/${museume.id}`} >
+                <img
+                  src={`${AWS_S3}muSingle/${museume.firstmuImage.id}.jpg`} width="160" height="145"/> /></a>
+              }
             >
                 <Meta
                     title={museume.name}
