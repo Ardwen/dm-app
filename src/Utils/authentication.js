@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { USER_SERVER } from '../Config.js';
 
-export const USER_NAME_SESSION_ATTRIBUTE_NAME = 'username'
+export const USER_NAME_SESSION_ATTRIBUTE_NAME = 'username';
+export const TOKEN_SESSION_ATTRIBUTE_NAME = 'access_token';
 
 class AuthenticationService {
 
@@ -14,7 +15,8 @@ class AuthenticationService {
 
     registerSuccessfulLoginForJwt(username, token) {
         sessionStorage.setItem(USER_NAME_SESSION_ATTRIBUTE_NAME, username)
-        this.setupAxiosInterceptors(this.createJWTToken(token))
+        sessionStorage.setItem(TOKEN_SESSION_ATTRIBUTE_NAME, this.createJWTToken(token))
+        this.setupAxiosInterceptors()
     }
 
     createJWTToken(token) {
@@ -24,6 +26,7 @@ class AuthenticationService {
 
     logout() {
         sessionStorage.removeItem(USER_NAME_SESSION_ATTRIBUTE_NAME);
+        sessionStorage.removeItem(TOKEN_SESSION_ATTRIBUTE_NAME);
     }
 
     isUserLoggedIn() {
@@ -38,7 +41,8 @@ class AuthenticationService {
         return user
     }
 
-    setupAxiosInterceptors(token) {
+    setupAxiosInterceptors() {
+        let token = sessionStorage.getItem(TOKEN_SESSION_ATTRIBUTE_NAME)
         axios.interceptors.request.use(
             (config) => {
                 if (this.isUserLoggedIn()) {

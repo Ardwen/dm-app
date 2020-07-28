@@ -12,11 +12,12 @@ const countryOptions = CountryOptions;
 
 function MuseumeEditPage(props) {
 
-    const [Museume, setMuseume] = useState(props.Museume)
-    const [TitleValue, setTitleValue] = useState(props.Museume.name)
-    const [DescriptionValue, setDescriptionValue] = useState(props.Museume.introduction)
-    const [CountryValue, setCountryValue] = useState(props.Museume.country)
-    const [CityValue, setCityValue] = useState(props.Museume.city)
+    const museumeId = parseInt(props.match.params.museumeId);
+    const [Museume, setMuseume] = useState()
+    const [TitleValue, setTitleValue] = useState()
+    const [DescriptionValue, setDescriptionValue] = useState()
+    const [CountryValue, setCountryValue] = useState()
+    const [CityValue, setCityValue] = useState()
     const [CategoryValue, setCategoryValue] = useState(parseInt(props.Museume.category.id))
     const [LinkValue, setLinkValue] = useState(props.Museume.link)
 
@@ -59,11 +60,16 @@ function MuseumeEditPage(props) {
         .then(res => {
           setcategories(res.data)
         })
-
-        Axios.get(`${USER_SERVER}/categories`)
+      Axios.get(`${USER_SERVER}/Museume/${museumeId}`)
           .then(res => {
-            setcategories(res.data)
+            setMuseume(res.data)
           })
+
+      setCategoryValue(Museume.category.id);
+      setTitleValue(Museume.name);
+      setCityValue(Museume.city);
+      setCountryValue(Museume.country);
+      set
     },[])
 
 
@@ -108,7 +114,7 @@ function MuseumeEditPage(props) {
               <Form onSubmit={onSubmit} >
 
                   {/* DropZone */}
-                  <FileUpload refreshFunction={updateImages} id={}/>
+                  <FileUpload refreshFunction={updateImages} id={Museume.id}/>
 
                   <br />
                   <br />

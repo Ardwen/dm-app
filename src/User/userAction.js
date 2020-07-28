@@ -10,6 +10,7 @@ import {
     REMOVE_ART_ITEM_USER
 } from './types.js';
 import { USER_SERVER } from '../Config.js';
+import AuthenticationService from '../Utils/authentication.js';
 
 export function registerUser(dataToSubmit) {
     const request = axios.post(`${USER_SERVER}/register`, dataToSubmit)
